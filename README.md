@@ -9,3 +9,7 @@ Unofficial C++ client library for [Sentry](https://sentry.io).
 ## Alternatives
 
 https://github.com/truszkowski/raven-cpp
+
+## License
+
+MIT
