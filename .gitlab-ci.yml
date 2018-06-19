@@ -1,0 +1,45 @@
+variables:
+  CXX: g++
+  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DLOG_DEBUG_MESSAGES=ON -DBUILD_TESTS=ON"
+
+# template to build the src
+.build_tpl: &build_tpl
+  stage: build
+  script:
+  - $CXX -dumpversion
+  - cmake -version
+  - alias make="make -j `nproc --all`"
+  - echo "Building on `nproc --all` cores with CMAKE_ARGS=$CMAKE_ARGS, CC=$CC, CXX=$CXX"
+  - mkdir build && pushd build
+  - cmake $CMAKE_ARGS ..
+  - time make
+  - make test
+
+# gcc 4.8, cmake 2.8
+ubuntu-14.04:
+  image: ubuntu:14.04
+  before_script:
+  - apt-get update -qq && apt-get install -qq build-essential cmake
+  <<: *build_tpl
+
+# gcc 5.4, cmake 3.5
+ubuntu-16.04:
+  image: ubuntu:16.04
+  before_script:
+  - apt-get update -qq && apt-get install -qq build-essential cmake
+  <<: *build_tpl
+
+# gcc 7.3, cmake 3.10
+ubuntu-18.04:
+  image: ubuntu:18.04
+  before_script:
+  - apt-get update -qq && apt-get install -qq build-essential cmake
+  <<: *build_tpl
+
+clang-5.0:
+  image: ubuntu:16.04
+  variables:
+    CXX: clang++-5.0
+  before_script:
+  - apt-get update -qq && apt-get install -qq cmake clang-5.0
+  <<: *build_tpl

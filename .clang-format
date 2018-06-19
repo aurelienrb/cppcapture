@@ -1,0 +1,19 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 120
+NamespaceIndentation: All
+PointerAlignment: Middle
+BreakBeforeBraces: Attach #Stroustrup
+AccessModifierOffset: -4
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: true
+BinPackArguments: false
+BinPackParameters: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+Cpp11BracedListStyle: false
+MaxEmptyLinesToKeep: 1
+PenaltyBreakComment: 0
+AlignConsecutiveAssignments: true
+AlignAfterOpenBracket: DontAlign
+
