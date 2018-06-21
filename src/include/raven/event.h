@@ -3,37 +3,19 @@
 #include <string>
 #include <unordered_map>
 
+#include "raven/eventlevel.h"
+
 namespace raven {
-    enum class Level {
-        Fatal,
-        Error,
-        Warning,
-        Info,
-        Debug,
-    };
-
-    inline const char * ToString(Level level) {
-        switch (level) {
-        case Level::Fatal:
-            return "fatal";
-        case Level::Error:
-            return "error";
-        case Level::Warning:
-            return "warning";
-        case Level::Info:
-            return "info";
-        case Level::Debug:
-            return "debug";
-        default:
-            return "";
-        }
-    }
-
     class Event {
     public:
-        explicit Event(Level level) : m_level(level) {}
+        explicit Event(EventLevel level) : m_level(level) {}
         Event(Event &&)      = default;
         Event(const Event &) = delete;
+
+        Event & WithFunctionLocation(const char * functionName) {
+            m_functionName = functionName;
+            return *this;
+        }
 
         Event & WithFileLocation(const char * sourceFile, int lineNumber = 0) {
             m_sourceFile = sourceFile;
@@ -41,7 +23,9 @@ namespace raven {
             return *this;
         }
 
-        // not very useful in C++ unless we use something like log4cxx?
+        // can be combined with a macro of a logging library such as LOG4CXX to include the logger name of the current
+        // module (not very useful in C++ since we have source file location macros, but Sentry offers specific support
+        // for that)
         Event & WithLoggerName(std::string loggerName) {
             m_loggerName = std::move(loggerName);
             return *this;
@@ -79,9 +63,10 @@ namespace raven {
         std::string ToJSON() const;
 
     private:
-        Level m_level;
-        const char * m_sourceFile = nullptr;
-        int m_lineNumber          = 0;
+        EventLevel m_level          = EventLevel::Error;
+        const char * m_functionName = nullptr;
+        const char * m_sourceFile   = nullptr;
+        int m_lineNumber            = 0;
         std::string m_message;
         std::string m_exceptionType;
         std::string m_exceptionValue;

@@ -1,25 +1,25 @@
 set(REVEN_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(RAVENLIB_SRC
+	${REVEN_INC_DIR}/raven/channel.h
 	${REVEN_INC_DIR}/raven/client.h
 	${REVEN_INC_DIR}/raven/config.h
+	${REVEN_INC_DIR}/raven/eventlevel.h
 	${REVEN_INC_DIR}/raven/event.h
 	${REVEN_INC_DIR}/raven/raven.h
+	channels/sentry.cpp
+	channels/sentry.h
+	channels/socket_posix.h
+	channels/socket_windows.h
+	channels/socket.cpp
+	channels/socket.h
+	channel.cpp
 	client.cpp
 	event.cpp
-	http_encoder.h
 	json_encoder.h
-	network_socket.cpp
-	network_socket.h
-	utils.cpp
+	raven.cpp
 	utils.h
 )
-
-if (WIN32)
-	list(APPEND RAVENLIB_SRC network_socket_windows.h)
-else()
-	list(APPEND RAVENLIB_SRC network_socket_posix.h)
-endif()
 
 add_library(ravencpp ${RAVENLIB_SRC})
 target_include_directories(ravencpp PUBLIC ${REVEN_INC_DIR})

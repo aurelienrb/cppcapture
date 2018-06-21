@@ -1,12 +1,12 @@
-#include "network_socket.h"
-#include "utils.h"
+#include "socket.h"
+#include "../utils.h"
 
 #include <cstring>
 
 #ifdef _WIN32
-#include "network_socket_windows.h"
+#include "socket_windows.h"
 #else
-#include "network_socket_posix.h"
+#include "socket_posix.h"
 #endif
 
 // utility RAII object to close the given socket

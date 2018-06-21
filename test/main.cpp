@@ -5,7 +5,7 @@ struct Error : public std::logic_error {
 };
 
 int main() {
-    raven::Configure().setProjectID(1227606).setToken("2e776f4b5f4349dfaa74146c71036871");
+    raven::ConfigureSentry(1227606, "2e776f4b5f4349dfaa74146c71036871");
 
     try {
         RavenCaptureWarning("simple warning message").WithTag("tag1", "value1").WithExtra("extra1", "value");

@@ -1,6 +1,6 @@
 #pragma once
 
-#define RAVEN_VERSION "0.1"
+#define RAVEN_VERSION "0.2"
 
 #include "raven/client.h"
 #include "raven/config.h"
@@ -10,15 +10,32 @@
 #include <string>
 
 #define RavenCaptureWarning(msg)                                                                                       \
-    raven::Client::Default() << raven::Event{ raven::Level::Warning }.WithFileLocation(__FILE__).WithMessage(msg)
+    raven::DefaultCcontext() << raven::Event{ raven::EventLevel::Warning }                                             \
+                                    .WithLoggerName(__func__)                                                          \
+                                    .WithFileLocation(__FILE__, __LINE__)                                              \
+                                    .WithMessage(msg)
 
 #define RavenCaptureError(msg)                                                                                         \
-    raven::Client::Default() << raven::Event{ raven::Level::Error }.WithFileLocation(__FILE__).WithMessage(msg)
+    raven::DefaultCcontext() << raven::Event{ raven::EventLevel::Error }                                               \
+                                    .WithFunctionLocation(__func__)                                                    \
+                                    .WithFileLocation(__FILE__, __LINE__)                                              \
+                                    .WithMessage(msg)
 
 #define RavenCaptureException(e)                                                                                       \
-    raven::Client::Default() << raven::Event{ raven::Level::Error }.WithFileLocation(__FILE__).WithException(e)
+    raven::DefaultCcontext() << raven::Event{ raven::EventLevel::Error }                                               \
+                                    .WithFunctionLocation(__func__)                                                    \
+                                    .WithFileLocation(__FILE__, __LINE__)                                              \
+                                    .WithMessage(e.what())                                                             \
+                                    .WithException(e)
 
 namespace raven {
+    // DefaultClient returns the default context to be used for sending events
+    Client & DefaultCcontext();
+
+    // ConfigureSentry configures the default context to send events to Sentry
+    // Can throw if the given configuration is invalid
+    void ConfigureSentry(int projectID, const std::string & token);
+
     // SetLibraryLogsHandler replaces the default log output handler that displays errors messages from the library
     // on std::cerr. A null handler can be given to disable log outputs.
     // Note: the handler is shared by all the clients.
