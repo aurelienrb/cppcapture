@@ -16,4 +16,4 @@ namespace raven {
         int m_projectID        = 0;
         std::string m_token;
     };
-}
+} // namespace raven

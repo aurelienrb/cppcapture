@@ -41,15 +41,43 @@ static std::string makeExceptionType(const std::exception & e) {
     return std::string{ name };
 }
 
-static std::string makeCulprit(const char * sourceFile, int lineNumber) {
-    std::string location = sourceFile;
+static std::string normalizeSourceFilePath(const char * sourceFile) {
+    std::string path = sourceFile;
 #ifdef _WIN32
-    std::replace(location.begin(), location.end(), '\\', '/');
+    std::replace(path.begin(), path.end(), '\\', '/');
 #endif
-    if (lineNumber > 0) {
-        location += ":" + std::to_string(lineNumber);
+    return path;
+}
+
+// we do not include the line number because the result is used as a search tag in the Sentry UI
+// and it is more convenient to filter messages belonging to the same whole file rather
+// than a specific file line number
+static std::string makeCulprit(const char * functionName, const char * sourceFile) {
+    std::string result;
+
+    if (functionName != nullptr) {
+        result = functionName;
     }
-    return location;
+
+    if (sourceFile != nullptr) {
+        std::string path = normalizeSourceFilePath(sourceFile);
+
+        // if we already have the function name, just keep the file name and not its full path
+        if (!result.empty()) {
+            auto pos = path.find_last_of('/');
+            if (pos != std::string::npos) {
+                path = path.substr(pos + 1);
+            }
+        }
+
+        if (result.empty()) {
+            result = std::move(path);
+        } else {
+            result += " (" + path + ")";
+        }
+    }
+
+    return result;
 }
 
 namespace raven {
@@ -85,14 +113,21 @@ namespace raven {
         json.append("timestamp", makeTimestamp());
 
         // The name of the logger which created the record
-        json.append("logger", m_loggerName);
+        // If none is provided, the source file path is a good replacement
+        if (!m_loggerName.empty()) {
+            json.append("logger", m_loggerName);
+        } else if (m_sourceFile) {
+            json.append("logger", normalizeSourceFilePath(m_sourceFile));
+        }
 
         if (m_sourceFile != nullptr) {
-            json.append("culprit", makeCulprit(m_sourceFile, m_lineNumber));
+            json.append("culprit", makeCulprit(m_functionName, m_sourceFile));
         }
 
         json.append("level", ToString(m_level));
         json.append("tags", m_tags);
+
+        // TODO: add sourceFile, lineNumber, functioName...
         json.append("extra", m_extra);
 
         if (!m_exceptionType.empty()) {

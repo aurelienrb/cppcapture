@@ -17,15 +17,16 @@ namespace raven {
             return *this;
         }
 
+        // On Windows, path can include anti-slashes
         Event & WithFileLocation(const char * sourceFile, int lineNumber = 0) {
             m_sourceFile = sourceFile;
             m_lineNumber = lineNumber;
             return *this;
         }
 
-        // can be combined with a macro of a logging library such as LOG4CXX to include the logger name of the current
-        // module (not very useful in C++ since we have source file location macros, but Sentry offers specific support
-        // for that)
+        // Set the LoggerName info.
+        // May be not very useful in a C++ context since we have source file location macros, but can make sense
+        // if combined with a logging library such as LOG4CXX that has such a concept.
         Event & WithLoggerName(std::string loggerName) {
             m_loggerName = std::move(loggerName);
             return *this;

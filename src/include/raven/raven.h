@@ -11,7 +11,7 @@
 
 #define RavenCaptureWarning(msg)                                                                                       \
     raven::DefaultCcontext() << raven::Event{ raven::EventLevel::Warning }                                             \
-                                    .WithLoggerName(__func__)                                                          \
+                                    .WithFunctionLocation(__func__)                                                    \
                                     .WithFileLocation(__FILE__, __LINE__)                                              \
                                     .WithMessage(msg)
 

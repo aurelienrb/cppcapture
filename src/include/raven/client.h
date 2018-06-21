@@ -25,9 +25,7 @@ namespace raven {
             return *this;
         }
 
-        void SetChannel(ChannelPtr channel) {
-            m_channel = std::move(channel);
-        }
+        void SetChannel(ChannelPtr channel) { m_channel = std::move(channel); }
 
     private:
         ChannelPtr m_channel;
