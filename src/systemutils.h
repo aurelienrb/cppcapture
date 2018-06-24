@@ -1,16 +1,20 @@
 #pragma once
 
-#include "common.h"
+#include <string>
 
 namespace raven {
-    namespace system {
-        // generates a new UUID
-        std::string newUUID();
+    // generates a new UUID
+    std::string newUUID();
 
-        // returns the current user session name
-        std::string getCurrentUserName();
+    // returns the current user session name
+    std::string getCurrentUserName();
 
-        // returns the system host name
-        std::string getLocalHostName();
-    }
+    // returns the system host name
+    std::string getLocalHostName();
+
+    std::string normalizePath(const char * path);
+
+    std::string makeTimestamp();
+
+    std::string makeExceptionType(const std::exception & e);
 }

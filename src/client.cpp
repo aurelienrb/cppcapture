@@ -1,7 +1,5 @@
-﻿#include "raven/client.h"
-#include "utils.h"
-
-#include <cassert>
+﻿#include "debugging.h"
+#include "raven/client.h"
 
 namespace raven {
     Client::Client() {

@@ -13,7 +13,7 @@ option(BUILD_TESTS "Build the tests coming with the library" OFF)
 option(LOG_TRACE_MESSAGES "Build to log maximum log messages" OFF) # useful to debug JSON exhanges with servers
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
-  # provide basic support for legacy systems such as Ubuntu 14.04
+  # provide basic support for legacy systems such as Ubuntu 14.04 (gcc 4.8 / cmake 2.8)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 else()
   set(CMAKE_CXX_STANDARD 11)
@@ -33,9 +33,14 @@ else()
   endif()
 endif()
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/third_party/third_parties.cmake)
+
 add_subdirectory(src)
 
 if (BUILD_TESTS)
   enable_testing()
-  add_subdirectory(test)
+  add_subdirectory(examples)
+
+  add_test(NAME ravencpp_test COMMAND ravencpp_test)
+  add_test(NAME ravencpp_example COMMAND ravencpp_example)
 endif()

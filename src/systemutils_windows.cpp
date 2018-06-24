@@ -4,29 +4,26 @@
 #pragma comment(lib, "rpcrt4.lib")
 
 namespace raven {
-    namespace system {
-
-        std::string newUUID() {
-            UUID uuid;
-            UuidCreate(&uuid);
+    std::string newUUID() {
+        UUID uuid;
+        UuidCreate(&uuid);
             
-            std::string result;
-            RPC_CSTR szUuid = nullptr;
-            if (::UuidToStringA(&uuid, &szUuid) == RPC_S_OK)
-            {
-                result = reinterpret_cast<const char*>(szUuid);
-                ::RpcStringFreeA(&szUuid);
-            }
-
-            return result;
+        std::string result;
+        RPC_CSTR szUuid = nullptr;
+        if (::UuidToStringA(&uuid, &szUuid) == RPC_S_OK)
+        {
+            result = reinterpret_cast<const char*>(szUuid);
+            ::RpcStringFreeA(&szUuid);
         }
 
-        std::string getCurrentUserName() {
-            return "aurelien";
-        }
+        return result;
+    }
 
-        std::string getLocalHostName() {
-            return "PC";
-        }
+    std::string getCurrentUserName() {
+        return "aurelien";
+    }
+
+    std::string getLocalHostName() {
+        return "PC";
     }
 }

@@ -18,17 +18,24 @@ set(RAVENLIB_SRC
 	network/socket.h
 	channel.cpp
 	client.cpp
+	debugging.h
 	event.cpp
 	raven.cpp
 	sender_thread.cpp
 	sender_thread.h
-	utils.h
+	systemutils.h
+	systemutils.cpp
 )
 
 if (WIN32)
 	list(APPEND RAVENLIB_SRC
 		network/socket_windows.cpp
 		network/socket_windows.h
+		systemutils_windows.cpp
+	)
+else()
+	list(APPEND RAVENLIB_SRC
+		systemutils_posix.cpp
 	)
 endif()
 
@@ -42,4 +49,12 @@ endif()
 
 if (UNIX)
 	target_link_libraries(ravencpp pthread)
+endif()
+
+
+if (BUILD_TESTS)
+	add_executable(ravencpp_test 
+		systemutils_test.cpp
+	)
+	target_link_libraries(ravencpp_test ravencpp catch)
 endif()

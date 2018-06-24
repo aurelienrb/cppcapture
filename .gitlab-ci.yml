@@ -13,7 +13,7 @@ variables:
   - mkdir build && pushd build
   - cmake $CMAKE_ARGS ..
   - time make
-  - make test
+  - CTEST_OUTPUT_ON_FAILURE=1 make test
 
 # gcc 4.8, cmake 2.8
 ubuntu-14.04:
