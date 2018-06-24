@@ -7,12 +7,8 @@ namespace raven {
     // Client is used to send events to Sentry service
     class Client {
     public:
-        Client() = default;
-        ~Client() {
-            if (m_channel) {
-                m_channel->Flush();
-            }
-        }
+        Client();
+        ~Client();
 
         // prevent copy
         Client(const Client &) = delete;

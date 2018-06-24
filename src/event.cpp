@@ -1,53 +1,7 @@
-#include "json_encoder.h"
+#include "debugging.h"
+#include "encoder/json_encoder.h"
 #include "raven/raven.h"
-#include "utils.h"
-
-#include <algorithm>
-#include <cstring>
-#include <time.h>
-
-#ifdef _WIN32
-static errno_t gmtime_r(const time_t * timep, struct tm * result) {
-    return gmtime_s(result, timep);
-}
-#endif
-
-static std::string makeTimestamp() {
-    time_t now;
-    time(&now);
-
-    struct tm utcTime;
-    gmtime_r(&now, &utcTime);
-
-    char buffer[32];
-    strftime(buffer, sizeof buffer, "%FT%TZ", &utcTime);
-    return buffer;
-}
-
-static std::string makeExceptionType(const std::exception & e) {
-#ifdef _MSC_VER
-#ifndef _CPPRTTI
-// we need RTTI for makeExceptionType()
-#error "RTTI support must be enabled"
-#endif
-#endif
-    const char * name = typeid(e).name();
-    // we expect something like "class std::runtime_exception"
-    if (strncmp(name, "class ", 6) == 0) {
-        return name + 6;
-    } else if (strncmp(name, "struct ", 7) == 0) {
-        return name + 7;
-    }
-    return std::string{ name };
-}
-
-static std::string normalizeSourceFilePath(const char * sourceFile) {
-    std::string path = sourceFile;
-#ifdef _WIN32
-    std::replace(path.begin(), path.end(), '\\', '/');
-#endif
-    return path;
-}
+#include "systemutils.h"
 
 // we do not include the line number because the result is used as a search tag in the Sentry UI
 // and it is more convenient to filter messages belonging to the same whole file rather
@@ -60,7 +14,7 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
     }
 
     if (sourceFile != nullptr) {
-        std::string path = normalizeSourceFilePath(sourceFile);
+        std::string path = raven::normalizePath(sourceFile);
 
         // if we already have the function name, just keep the file name and not its full path
         if (!result.empty()) {
@@ -81,7 +35,9 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
 }
 
 namespace raven {
-    Event & Event::WithException(const std::exception & e) { return WithException(makeExceptionType(e), e.what()); }
+    Event & Event::WithException(const std::exception & e) {
+        return WithException(makeExceptionType(e), e.what());
+    }
 
     std::string Event::ToJSON() const {
         JsonEncoder json;
@@ -117,7 +73,7 @@ namespace raven {
         if (!m_loggerName.empty()) {
             json.append("logger", m_loggerName);
         } else if (m_sourceFile) {
-            json.append("logger", normalizeSourceFilePath(m_sourceFile));
+            json.append("logger", normalizePath(m_sourceFile));
         }
 
         if (m_sourceFile != nullptr) {
@@ -127,8 +83,20 @@ namespace raven {
         json.append("level", ToString(m_level));
         json.append("tags", m_tags);
 
-        // TODO: add sourceFile, lineNumber, functioName...
-        json.append("extra", m_extra);
+        // source file location
+        auto extra = m_extra;
+        if (m_sourceFile != nullptr) {
+            auto location = normalizePath(m_sourceFile);
+            if (m_lineNumber > 0) {
+                location += ":" + std::to_string(m_lineNumber);
+            }
+            extra["File location"] = location;
+        }
+        if (m_functionName != nullptr) {
+            extra["Function"] = m_functionName;
+        }
+
+        json.append("extra", extra);
 
         if (!m_exceptionType.empty()) {
             json.beginBlock("sentry.interfaces.Exception")

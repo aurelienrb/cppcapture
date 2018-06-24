@@ -1,6 +1,6 @@
 variables:
   CXX: g++
-  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DLOG_DEBUG_MESSAGES=ON -DBUILD_TESTS=ON"
+  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DLOG_TRACE_MESSAGES=ON -DBUILD_TESTS=ON"
 
 # template to build the src
 .build_tpl: &build_tpl
@@ -13,7 +13,7 @@ variables:
   - mkdir build && pushd build
   - cmake $CMAKE_ARGS ..
   - time make
-  - make test
+  - CTEST_OUTPUT_ON_FAILURE=1 make test
 
 # gcc 4.8, cmake 2.8
 ubuntu-14.04:

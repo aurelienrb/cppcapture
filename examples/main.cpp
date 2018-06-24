@@ -17,7 +17,6 @@ static void doSomething() {
         .WithTag({ "tag1", "value1" })
         .WithExtra({ "extra1", "value" });
     RavenCaptureError("error message from doSomething").WithTag("tag1", "value1").WithExtra("extra1", "value");
-
     throw Error{};
 }
 

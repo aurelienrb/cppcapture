@@ -6,7 +6,7 @@ PointerAlignment: Middle
 BreakBeforeBraces: Attach #Stroustrup
 AccessModifierOffset: -4
 AllowShortBlocksOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Inline
+AllowShortFunctionsOnASingleLine: false
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: false
 BinPackParameters: false
