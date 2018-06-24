@@ -8,7 +8,7 @@ static std::mutex s_allChannelsMutex;
 static std::vector<raven::Channel *> s_allChannels;
 
 namespace raven{
-    void FlushAllClients() {
+    void FlushAllChannels() {
         std::lock_guard<std::mutex> lock{ s_allChannelsMutex };
         for (const auto & c : s_allChannels) {
             c->Flush();

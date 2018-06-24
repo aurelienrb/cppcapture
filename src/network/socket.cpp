@@ -1,5 +1,5 @@
-#include "socket.h"
 #include "../utils.h"
+#include "socket.h"
 
 #include <cstring>
 
@@ -9,19 +9,38 @@
 #include "socket_posix.h"
 #endif
 
-// utility RAII object to close the given socket
-static raven::Guard SocketCloser(SOCKET s) {
-    return raven::Guard{ [s] {
-        LogDebug("closing socket");
-        closesocket(s);
-    } };
-}
+#define LOG_SOCKET_MESSAGES 0
 
-static std::string Receive(SOCKET sock) {
+// utility RAII object to close the given socket
+class SocketCloser {
+public:
+    explicit SocketCloser(SOCKET sock) : m_sock(sock) {
+    }
+    SocketCloser(const SocketCloser &) = delete;
+    ~SocketCloser() {
+        LogDebug("closing socket");
+        closesocket(m_sock);
+    }
+
+private:
+    SOCKET m_sock;
+};
+
+/*
+static bool HasDataToRead(SOCKET sock) {
+    u_long pendingSize;
+    if (ioctlsocket(sock, FIONREAD, &pendingSize) != NO_ERROR) {
+        LogSocketError("failed to peek socket data size");
+        return false;
+    }
+    return (pendingSize > 0);
+}
+*/
+static std::string BlockingRead(SOCKET sock) {
     std::string response;
     for (;;) {
         char recvbuf[1024]; // typical response size is ~600 bytes
-        int recvSize = recv(sock, recvbuf, sizeof(recvbuf), 0);
+        int recvSize = recv(sock, recvbuf, sizeof(recvbuf), MSG_PEEK);
         if (recvSize > 0) {
             // we received data
             response.append(recvbuf, recvSize);
@@ -83,33 +102,37 @@ static bool TryConnect(SOCKET sock, const std::string & hostName, int portNumber
 }
 
 namespace raven {
-    void SendRawRequest(std::string hostName, int portNumber, const std::string & data) {
-        // Windows sockets must be initialized at the process level before being used
+    bool SendRawRequest(std::string hostName, int portNumber, const std::string & data, std::string & response) {
+        // Windows sockets must be initialized being used
         InitWinsock();
 
         // create the socket
         SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
         if (sock < 0) {
             LogError("failed to create new socket");
-            return; // TODO: reeaddrinfo(addrResult);
+            return false; // TODO: reeaddrinfo(addrResult);
         }
-        auto closer = SocketCloser(sock);
+        SocketCloser closer{ sock };
 
         // connect to the given host
-        LogDebug("connecting to host");
+        LogDebug("connecting to host " + hostName);
         if (!TryConnect(sock, hostName, portNumber)) {
             LogError("failed to connect to ", hostName, " on port ", portNumber);
-            return;
+            return false;
         }
 
         // send the request
-        LogDebug("sending data on socket:\n", data);
+        LogDebug("sending data on socket");
+        LogTrace(data);
+
         if (send(sock, data.c_str(), static_cast<int>(data.length()), 0) < 0) {
             LogSocketError("failed to send data on socket");
+            return false;
         }
 
-        // only in debug: wait for the response
-        LogDebug("response from remote server:\n", Receive(sock));
-        (void)&Receive; // mute GCC error "Receive() defined but not used" (in release)
+        // wait for the response of the server before closing the socket (or our request will be lost)
+        response = BlockingRead(sock);
+        LogTrace("response from remote server:\n", response);
+        return true;
     }
 } // namespace raven

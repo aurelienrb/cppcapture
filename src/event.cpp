@@ -1,4 +1,4 @@
-#include "json_encoder.h"
+#include "encoder/json_encoder.h"
 #include "raven/raven.h"
 #include "utils.h"
 
@@ -41,7 +41,7 @@ static std::string makeExceptionType(const std::exception & e) {
     return std::string{ name };
 }
 
-static std::string normalizeSourceFilePath(const char * sourceFile) {
+static std::string normalizeSourceFile(const char * sourceFile) {
     std::string path = sourceFile;
 #ifdef _WIN32
     std::replace(path.begin(), path.end(), '\\', '/');
@@ -60,7 +60,7 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
     }
 
     if (sourceFile != nullptr) {
-        std::string path = normalizeSourceFilePath(sourceFile);
+        std::string path = normalizeSourceFile(sourceFile);
 
         // if we already have the function name, just keep the file name and not its full path
         if (!result.empty()) {
@@ -81,7 +81,9 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
 }
 
 namespace raven {
-    Event & Event::WithException(const std::exception & e) { return WithException(makeExceptionType(e), e.what()); }
+    Event & Event::WithException(const std::exception & e) {
+        return WithException(makeExceptionType(e), e.what());
+    }
 
     std::string Event::ToJSON() const {
         JsonEncoder json;
@@ -117,7 +119,7 @@ namespace raven {
         if (!m_loggerName.empty()) {
             json.append("logger", m_loggerName);
         } else if (m_sourceFile) {
-            json.append("logger", normalizeSourceFilePath(m_sourceFile));
+            json.append("logger", normalizeSourceFile(m_sourceFile));
         }
 
         if (m_sourceFile != nullptr) {
@@ -127,8 +129,20 @@ namespace raven {
         json.append("level", ToString(m_level));
         json.append("tags", m_tags);
 
-        // TODO: add sourceFile, lineNumber, functioName...
-        json.append("extra", m_extra);
+        // source file location
+        auto extra = m_extra;
+        if (m_sourceFile != nullptr) {
+            auto location = normalizeSourceFile(m_sourceFile);
+            if (m_lineNumber > 0) {
+                location += ":" + std::to_string(m_lineNumber);
+            }
+            extra["File location"] = location;
+        }
+        if (m_functionName != nullptr) {
+            extra["Function"] = m_functionName;
+        }
+
+        json.append("extra", extra);
 
         if (!m_exceptionType.empty()) {
             json.beginBlock("sentry.interfaces.Exception")

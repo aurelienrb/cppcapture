@@ -4,8 +4,20 @@
 #include <cassert>
 
 namespace raven {
+    Client::Client() {
+        LogInfo("creating new client");
+    }
+    Client::~Client() {
+        LogInfo("destroying client");
+        if (m_channel) {
+            LogInfo("flushing channel attached to Client");
+            m_channel->Flush();
+        }
+    }
+
     void Client::Send(const Event & event) {
         assert(m_channel);
+        LogInfo("sending new event from Client");
         if (!m_channel) {
             LogError("can't send the event: channel configuration was not done");
             return;

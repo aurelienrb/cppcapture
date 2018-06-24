@@ -29,9 +29,13 @@ namespace raven {
         virtual void SendEvent(const Event & e) = 0;
 
         // Called to ask the channel to ensure that all the events it received so far have been properly sent.
-        // Idealy, the function should not take too long to complete and return after few seconds at most.
+        // Idealy, the function should not take too long to complete and return after a few seconds at most.
+        // More specifically, ig the connection is down, it should not hang waiting for the connection to be up again.
         // It must also be possible to call it from any thread.
-        virtual void Flush() {}
+        // Special consideration: should Flush() continue to accept new events via SendEvent() is up to the
+        // implementation
+        virtual void Flush() {
+        }
 
     protected:
         // Channel constructor keeps tracks of of the created instances

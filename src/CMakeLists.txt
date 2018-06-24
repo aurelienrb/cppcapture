@@ -7,23 +7,39 @@ set(RAVENLIB_SRC
 	${REVEN_INC_DIR}/raven/eventlevel.h
 	${REVEN_INC_DIR}/raven/event.h
 	${REVEN_INC_DIR}/raven/raven.h
-	channels/sentry.cpp
-	channels/sentry.h
-	channels/socket_posix.h
-	channels/socket_windows.h
-	channels/socket.cpp
-	channels/socket.h
+	encoder/json_encoder.h
+	encoder/sentry.cpp
+	encoder/sentry.h
+	network/httpclient.h
+	network/http_socket.cpp
+	network/http_socket.h
+	network/socket_posix.h
+	network/socket.cpp
+	network/socket.h
 	channel.cpp
 	client.cpp
 	event.cpp
-	json_encoder.h
 	raven.cpp
+	sender_thread.cpp
+	sender_thread.h
 	utils.h
 )
 
+if (WIN32)
+	list(APPEND RAVENLIB_SRC
+		network/socket_windows.cpp
+		network/socket_windows.h
+	)
+endif()
+
 add_library(ravencpp ${RAVENLIB_SRC})
 target_include_directories(ravencpp PUBLIC ${REVEN_INC_DIR})
+target_include_directories(ravencpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (LOG_DEBUG_MESSAGES)
-	target_compile_definitions(ravencpp PRIVATE -DLOG_DEBUG_MESSAGES)
+if (LOG_TRACE_MESSAGES)
+	target_compile_definitions(ravencpp PRIVATE -DLOG_TRACE_MESSAGES)
+endif()
+
+if (UNIX)
+	target_link_libraries(ravencpp pthread)
 endif()

@@ -10,7 +10,7 @@ project(ravencpp)
 
 # options
 option(BUILD_TESTS "Build the tests coming with the library" OFF)
-option(LOG_DEBUG_MESSAGES "Build to log maximum log messages" OFF) # useful to debug JSON exhanges with Sentry
+option(LOG_TRACE_MESSAGES "Build to log maximum log messages" OFF) # useful to debug JSON exhanges with servers
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   # provide basic support for legacy systems such as Ubuntu 14.04
