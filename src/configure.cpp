@@ -1,5 +1,5 @@
+#include "cppcapture/configure.h"
 #include "encoder/sentry.h"
-#include "raven/raven.h"
 #include "sender_thread.h"
 
 #include <iostream>
@@ -22,7 +22,7 @@ static void DefaultLogHandler(const std::string & level, const std::string & msg
         std::lock_guard<std::mutex> lock{ s_mutex };
 #endif
 
-        *stream << "(raven-cpp) [";
+        *stream << "(cppcapture) [";
         for (size_t i = level.length(); i < 5; i++) {
             *stream << ' ';
         }
@@ -37,18 +37,9 @@ static void DefaultLogHandler(const std::string & level, const std::string & msg
 // logger function to use (if any)
 static std::function<void(std::string level, std::string msg)> s_logFn = &DefaultLogHandler;
 
-namespace raven {
-    Client & DefaultContext() {
-        // static Client s_client;
-        static std::unique_ptr<Client> s_client;
-        if (!s_client) {
-            s_client.reset(new Client{});
-        }
-        return *s_client;
-    }
-
-    void ConfigureSentry(int projectID, const std::string & token) {
-        DefaultContext().SetChannel(SenderThread::StartNew(NewSentryHTTPClient(projectID, token), &EncodeSentryEvent));
+namespace cppcapture {
+    void ConfigureSentry(Client & client, int projectID, const std::string & token) {
+        client.SetChannel(SenderThread::StartNew(NewSentryHTTPClient(projectID, token), &EncodeSentryEvent));
     }
 
     void SetLibraryLogsHandler(std::function<void(std::string level, std::string msg)> fn) {
@@ -60,4 +51,4 @@ namespace raven {
             s_logFn(level, msg);
         }
     }
-} // namespace raven
+} // namespace cppcapture

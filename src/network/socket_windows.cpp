@@ -1,7 +1,7 @@
 #include "socket_windows.h"
 #include "debugging.h"
 
-namespace raven {
+namespace cppcapture {
     void InitWinsock() {
         // don't use a static initialization object that calls WSAStartup() in its constructor because
         // it can make the code hang on VC++ if this function is itself called from another static object constructor
@@ -18,4 +18,4 @@ namespace raven {
             }
         }
     }
-} // namespace raven
+} // namespace cppcapture

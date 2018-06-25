@@ -17,6 +17,6 @@ public:
 };
 
 TEST_CASE("Test makeExceptionType") {
-    CHECK(raven::makeExceptionType(ExceptionClass{}) == "ExceptionClass");
-    CHECK(raven::makeExceptionType(ExceptionStruct{}) == "ExceptionStruct");
+    CHECK(cppcapture::makeExceptionType(ExceptionClass{}) == "ExceptionClass");
+    CHECK(cppcapture::makeExceptionType(ExceptionStruct{}) == "ExceptionStruct");
 }

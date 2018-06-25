@@ -3,12 +3,13 @@
 #include <string>
 #include <unordered_map>
 
-#include "raven/eventlevel.h"
+#include "cppcapture/eventlevel.h"
 
-namespace raven {
+namespace cppcapture {
     class Event {
     public:
-        explicit Event(EventLevel level) : m_level(level) {}
+        explicit Event(EventLevel level) : m_level(level) {
+        }
         Event(Event &&)      = default;
         Event(const Event &) = delete;
 
@@ -42,14 +43,18 @@ namespace raven {
             return *this;
         }
 
-        Event & WithTag(const std::pair<std::string, std::string> & p) { return WithTag(p.first, p.second); }
+        Event & WithTag(const std::pair<std::string, std::string> & p) {
+            return WithTag(p.first, p.second);
+        }
 
         Event & WithExtra(const std::string & key, const std::string & value) {
             m_extra[key] = value;
             return *this;
         }
 
-        Event & WithExtra(const std::pair<std::string, std::string> & p) { return WithExtra(p.first, p.second); }
+        Event & WithExtra(const std::pair<std::string, std::string> & p) {
+            return WithExtra(p.first, p.second);
+        }
 
         Event & WithException(const std::exception & e);
 
@@ -75,4 +80,4 @@ namespace raven {
         std::unordered_map<std::string, std::string> m_tags;
         std::unordered_map<std::string, std::string> m_extra;
     };
-} // namespace raven
+} // namespace cppcapture

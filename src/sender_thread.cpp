@@ -75,7 +75,7 @@ private:
     mutable std::mutex m_mutex;
 };
 
-namespace raven {
+namespace cppcapture {
     struct SenderThread::Pimpl {
         HTTPClientPtr httpClient;
         ChannelEncoderFn encoder;
@@ -164,7 +164,7 @@ namespace raven {
         LogInfo("exiting sender thread main loop");
     }
 
-    void SenderThread::SendEvent(const raven::Event & e) {
+    void SenderThread::SendEvent(const cppcapture::Event & e) {
         LogDebug("pushing a new event to the sender thread queue");
         if (!m_pimpl->isRunning) {
             LogError("ignoring request to send message: sender thread is not running");
@@ -201,4 +201,4 @@ namespace raven {
         }
         LogError("could not complete flush operation: message queue is not being processed fast enough");
     }
-} // namespace raven
+} // namespace cppcapture

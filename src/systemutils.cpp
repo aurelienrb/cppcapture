@@ -23,7 +23,7 @@ static std::string demangle(const std::type_info & type) {
     } else if (strncmp(name, "struct ", 7) == 0) {
         return name + 7;
     }
-    LogError(std::string{"failed to demangle VC++ type name: "} + name);
+    LogError(std::string{ "failed to demangle VC++ type name: " } + name);
     return name;
 }
 #else
@@ -31,14 +31,14 @@ static std::string demangle(const std::type_info & type) {
 
 static std::string demangle(const std::type_info & type) {
     int status;
-    char * demangled = abi::__cxa_demangle(type.name(), NULL, NULL, &status);
+    char * demangled         = abi::__cxa_demangle(type.name(), NULL, NULL, &status);
     const std::string result = (status == 0) ? demangled : type.name();
     free(demangled);
     return result;
 }
 #endif
 
-namespace raven {
+namespace cppcapture {
     std::string normalizePath(const char * path) {
         std::string result = (path != nullptr) ? path : "";
 #ifdef _WIN32
@@ -62,4 +62,4 @@ namespace raven {
     std::string makeExceptionType(const std::exception & e) {
         return demangle(typeid(e));
     }
-} // namespace raven
+} // namespace cppcapture

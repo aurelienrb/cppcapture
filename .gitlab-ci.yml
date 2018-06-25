@@ -1,6 +1,6 @@
 variables:
   CXX: g++
-  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DLOG_TRACE_MESSAGES=ON -DBUILD_TESTS=ON"
+  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DCPPCAPTURE_LOG_TRACES=ON -DCPPCAPTURE_BUILD_TESTS=ON"
 
 # template to build the src
 .build_tpl: &build_tpl

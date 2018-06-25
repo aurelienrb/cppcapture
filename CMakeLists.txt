@@ -6,11 +6,11 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type, Debug or Release" FORCE)
 endif()
 
-project(ravencpp)
+project(cppcapture)
 
 # options
-option(BUILD_TESTS "Build the tests coming with the library" OFF)
-option(LOG_TRACE_MESSAGES "Build to log maximum log messages" OFF) # useful to debug JSON exhanges with servers
+option(CPPCAPTURE_BUILD_TESTS "Build the tests and examples coming with the library" OFF)
+option(CPPCAPTURE_LOG_TRACES "Build to log maximum details (useful to debug socket exchanges)" OFF)
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   # provide basic support for legacy systems such as Ubuntu 14.04 (gcc 4.8 / cmake 2.8)
@@ -37,10 +37,10 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/third_party/third_parties.cmake)
 
 add_subdirectory(src)
 
-if (BUILD_TESTS)
+if (CPPCAPTURE_BUILD_TESTS)
   enable_testing()
   add_subdirectory(examples)
 
-  add_test(NAME ravencpp_test COMMAND ravencpp_test)
-  add_test(NAME ravencpp_example COMMAND ravencpp_example)
+  add_test(NAME cppcapture_test COMMAND cppcapture_test)
+  add_test(NAME cppcapture_example COMMAND cppcapture_example)
 endif()

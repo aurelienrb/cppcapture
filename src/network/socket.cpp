@@ -101,7 +101,7 @@ static bool TryConnect(SOCKET sock, const std::string & hostName, int portNumber
     }
 }
 
-namespace raven {
+namespace cppcapture {
     bool SendRawRequest(std::string hostName, int portNumber, const std::string & data, std::string & response) {
         // Windows sockets must be initialized being used
         InitWinsock();
@@ -135,4 +135,4 @@ namespace raven {
         LogTrace("response from remote server:\n", response);
         return true;
     }
-} // namespace raven
+} // namespace cppcapture

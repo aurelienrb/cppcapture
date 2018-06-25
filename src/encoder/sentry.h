@@ -1,13 +1,12 @@
 #pragma once
 
-#include "raven/event.h"
+#include "cppcapture/event.h"
 #include "network/httpclient.h"
 
 #include <string>
 
-namespace raven {
+namespace cppcapture {
     std::string EncodeSentryEvent(const Event & event);
 
     HTTPClientPtr NewSentryHTTPClient(int projectID, std::string token);
-} // namespace raven
-
+} // namespace cppcapture

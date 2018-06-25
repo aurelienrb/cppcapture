@@ -1,16 +1,16 @@
 #include "http_socket.h"
+#include "cppcapture/configure.h"
 #include "network/socket.h"
-#include "raven/raven.h"
 
 #include <sstream>
 
-namespace raven {
+namespace cppcapture {
     NativeSocketHTTPClient::NativeSocketHTTPClient(std::string hostname, int port, std::string path)
         : m_hostname(hostname), m_port(port) {
         std::ostringstream oss;
         oss << "POST " << path << " HTTP/1.1\r\n";
         oss << "Host: " << hostname << "\r\n";
-        oss << "User-Agent: raven/" << RAVEN_VERSION << "\r\n";
+        oss << "User-Agent: " << CPPCAPTURE_NAME << "/" << CPPCAPTURE_VERSION << "\r\n";
 
         // this is important for a one shot operation
         // otherwise the server won't close the socket once we read its response
@@ -35,4 +35,4 @@ namespace raven {
         std::string response;
         return SendRawRequest(m_hostname, m_port, request, response);
     }
-} // namespace raven
+} // namespace cppcapture

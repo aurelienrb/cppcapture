@@ -1,13 +1,13 @@
-#include "raven/channel.h"
+#include "cppcapture/channel.h"
 
 #include <algorithm>
 #include <mutex>
 #include <vector>
 
 static std::mutex s_allChannelsMutex;
-static std::vector<raven::Channel *> s_allChannels;
+static std::vector<cppcapture::Channel *> s_allChannels;
 
-namespace raven{
+namespace cppcapture {
     void FlushAllChannels() {
         std::lock_guard<std::mutex> lock{ s_allChannelsMutex };
         for (const auto & c : s_allChannels) {
@@ -26,4 +26,4 @@ namespace raven{
         std::lock_guard<std::mutex> lock{ s_allChannelsMutex };
         s_allChannels.erase(std::remove(s_allChannels.begin(), s_allChannels.end(), this), s_allChannels.end());
     }
-}
+} // namespace cppcapture

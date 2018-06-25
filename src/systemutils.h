@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace raven {
+namespace cppcapture {
     // generates a new UUID
     std::string newUUID();
 
@@ -17,4 +17,4 @@ namespace raven {
     std::string makeTimestamp();
 
     std::string makeExceptionType(const std::exception & e);
-}
+} // namespace cppcapture

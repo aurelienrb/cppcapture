@@ -10,4 +10,4 @@ mkdir %BUILDDIR% || goto:eof
 compact /c /q %BUILDDIR% > nul
 cd %BUILDDIR%
 
-cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DLOG_DEBUG_MESSAGES=ON -DBUILD_TESTS=ON .. || pause
+cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Debug -DCPPCAPTURE_LOG_TRACES=ON -DCPPCAPTURE_BUILD_TESTS=ON .. || pause

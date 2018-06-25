@@ -2,6 +2,6 @@
 
 #include <string>
 
-namespace raven {
+namespace cppcapture {
     bool SendRawRequest(std::string hostName, int portNumber, const std::string & data, std::string & response);
-} // namespace raven
+} // namespace cppcapture

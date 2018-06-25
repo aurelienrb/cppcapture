@@ -3,16 +3,15 @@
 #include <windows.h>
 #pragma comment(lib, "rpcrt4.lib")
 
-namespace raven {
+namespace cppcapture {
     std::string newUUID() {
         UUID uuid;
         UuidCreate(&uuid);
-            
+
         std::string result;
         RPC_CSTR szUuid = nullptr;
-        if (::UuidToStringA(&uuid, &szUuid) == RPC_S_OK)
-        {
-            result = reinterpret_cast<const char*>(szUuid);
+        if (::UuidToStringA(&uuid, &szUuid) == RPC_S_OK) {
+            result = reinterpret_cast<const char *>(szUuid);
             ::RpcStringFreeA(&szUuid);
         }
 
@@ -26,4 +25,4 @@ namespace raven {
     std::string getLocalHostName() {
         return "PC";
     }
-}
+} // namespace cppcapture
