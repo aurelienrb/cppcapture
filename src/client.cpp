@@ -1,7 +1,7 @@
 ﻿#include "debugging.h"
-#include "raven/client.h"
+#include "cppcapture/client.h"
 
-namespace raven {
+namespace cppcapture {
     Client::Client() {
         LogInfo("creating new client");
     }
@@ -28,4 +28,4 @@ namespace raven {
             LogError("caught an exception while sending event: ", e.what());
         }
     }
-} // namespace raven
+} // namespace cppcapture

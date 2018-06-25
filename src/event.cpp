@@ -1,6 +1,7 @@
+#include "cppcapture/event.h"
+#include "cppcapture/configure.h"
 #include "debugging.h"
 #include "encoder/json_encoder.h"
-#include "raven/raven.h"
 #include "systemutils.h"
 
 // we do not include the line number because the result is used as a search tag in the Sentry UI
@@ -14,7 +15,7 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
     }
 
     if (sourceFile != nullptr) {
-        std::string path = raven::normalizePath(sourceFile);
+        std::string path = cppcapture::normalizePath(sourceFile);
 
         // if we already have the function name, just keep the file name and not its full path
         if (!result.empty()) {
@@ -34,7 +35,7 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
     return result;
 }
 
-namespace raven {
+namespace cppcapture {
     Event & Event::WithException(const std::exception & e) {
         return WithException(makeExceptionType(e), e.what());
     }
@@ -51,7 +52,7 @@ namespace raven {
         json.append("platform", "c");
 
         // Information about the SDK sending the event.
-        json.beginBlock("sdk").append("name", "raven-cpp").append("version", RAVEN_VERSION).endBlock();
+        json.beginBlock("sdk").append("name", CPPCAPTURE_NAME).append("version", CPPCAPTURE_VERSION).endBlock();
 
         /*
         if (!s_values.ServerName.empty()) {
@@ -114,4 +115,4 @@ namespace raven {
 
         return json.complete();
     }
-} // namespace raven
+} // namespace cppcapture

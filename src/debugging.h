@@ -9,22 +9,22 @@
 #define _DEBUG
 #endif
 
-#define LogInfo(...) raven::LogMessage("info", __VA_ARGS__)
-#define LogError(...) raven::LogMessage("error", __VA_ARGS__)
+#define LogInfo(...) cppcapture::LogMessage("info", __VA_ARGS__)
+#define LogError(...) cppcapture::LogMessage("error", __VA_ARGS__)
 
 #if defined(_DEBUG) || defined(LOG_TRACE_MESSAGES)
-#define LogDebug(...) raven::LogMessage("debug", __VA_ARGS__)
+#define LogDebug(...) cppcapture::LogMessage("debug", __VA_ARGS__)
 #else
 #define LogDebug(...)
 #endif
 
-#ifdef LOG_TRACE_MESSAGES
-#define LogTrace(...) raven::LogMessage("trace", __VA_ARGS__)
+#ifdef CPPCAPTURE_LOG_TRACES
+#define LogTrace(...) cppcapture::LogMessage("trace", __VA_ARGS__)
 #else
 #define LogTrace(...)
 #endif
 
-namespace raven {
+namespace cppcapture {
     void LogMessage(const std::string & level, const std::string & msg);
 
     template <typename T>
@@ -44,4 +44,4 @@ namespace raven {
         MergeArgs(oss, msg, args...);
         LogMessage(level, oss.str());
     }
-} // namespace raven
+} // namespace cppcapture

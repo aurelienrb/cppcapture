@@ -1,12 +1,12 @@
-set(REVEN_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(cppcapture_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(RAVENLIB_SRC
-	${REVEN_INC_DIR}/raven/channel.h
-	${REVEN_INC_DIR}/raven/client.h
-	${REVEN_INC_DIR}/raven/config.h
-	${REVEN_INC_DIR}/raven/eventlevel.h
-	${REVEN_INC_DIR}/raven/event.h
-	${REVEN_INC_DIR}/raven/raven.h
+set(cppcapture_SRC
+	${cppcapture_INC_DIR}/cppcapture/channel.h
+	${cppcapture_INC_DIR}/cppcapture/client.h
+	${cppcapture_INC_DIR}/cppcapture/configure.h
+	${cppcapture_INC_DIR}/cppcapture/default.h
+	${cppcapture_INC_DIR}/cppcapture/eventlevel.h
+	${cppcapture_INC_DIR}/cppcapture/event.h
 	encoder/json_encoder.h
 	encoder/sentry.cpp
 	encoder/sentry.h
@@ -18,9 +18,9 @@ set(RAVENLIB_SRC
 	network/socket.h
 	channel.cpp
 	client.cpp
+	configure.cpp
 	debugging.h
 	event.cpp
-	raven.cpp
 	sender_thread.cpp
 	sender_thread.h
 	systemutils.h
@@ -28,33 +28,33 @@ set(RAVENLIB_SRC
 )
 
 if (WIN32)
-	list(APPEND RAVENLIB_SRC
+	list(APPEND cppcapture_SRC
 		network/socket_windows.cpp
 		network/socket_windows.h
 		systemutils_windows.cpp
 	)
 else()
-	list(APPEND RAVENLIB_SRC
+	list(APPEND cppcapture_SRC
 		systemutils_posix.cpp
 	)
 endif()
 
-add_library(ravencpp ${RAVENLIB_SRC})
-target_include_directories(ravencpp PUBLIC ${REVEN_INC_DIR})
-target_include_directories(ravencpp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(cppcapture ${cppcapture_SRC})
+target_include_directories(cppcapture PUBLIC ${cppcapture_INC_DIR})
+target_include_directories(cppcapture PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (LOG_TRACE_MESSAGES)
-	target_compile_definitions(ravencpp PRIVATE -DLOG_TRACE_MESSAGES)
+if (CPPCAPTURE_LOG_TRACES)
+	target_compile_definitions(cppcapture PRIVATE -DCPPCAPTURE_LOG_TRACES)
 endif()
 
 if (UNIX)
-	target_link_libraries(ravencpp pthread)
+	target_link_libraries(cppcapture pthread)
 endif()
 
 
-if (BUILD_TESTS)
-	add_executable(ravencpp_test 
+if (CPPCAPTURE_BUILD_TESTS)
+	add_executable(cppcapture_test 
 		systemutils_test.cpp
 	)
-	target_link_libraries(ravencpp_test ravencpp catch)
+	target_link_libraries(cppcapture_test cppcapture catch)
 endif()

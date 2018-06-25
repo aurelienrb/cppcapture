@@ -1,15 +1,15 @@
 #pragma once
 
+#include "cppcapture/channel.h"
 #include "network/httpclient.h"
-#include "raven/channel.h"
 
 #include <functional>
 #include <vector>
 
-namespace raven {
-    using ChannelEncoderFn = std::function<std::string(const raven::Event &)>;
+namespace cppcapture {
+    using ChannelEncoderFn = std::function<std::string(const cppcapture::Event &)>;
 
-    class SenderThread : public raven::Channel {
+    class SenderThread : public cppcapture::Channel {
     public:
         static std::shared_ptr<SenderThread> StartNew(HTTPClientPtr httpClient, ChannelEncoderFn encoder) {
             return std::shared_ptr<SenderThread>{ new SenderThread{ std::move(httpClient), std::move(encoder) } };
@@ -26,7 +26,7 @@ namespace raven {
         void stop();
 
     protected:
-        void SendEvent(const raven::Event & e) override;
+        void SendEvent(const cppcapture::Event & e) override;
         void Flush() override;
 
     private:
@@ -36,4 +36,4 @@ namespace raven {
         struct Pimpl;
         std::unique_ptr<Pimpl> m_pimpl;
     };
-} // namespace raven
+} // namespace cppcapture

@@ -1,9 +1,9 @@
-#include "network/http_socket.h"
 #include "sentry.h"
+#include "network/http_socket.h"
 
 #include <memory>
 
-namespace raven {
+namespace cppcapture {
     std::string EncodeSentryEvent(const Event & event) {
         return event.ToJSON();
     }
@@ -18,4 +18,4 @@ namespace raven {
         httpClient->addHeader("Content-Type", "application/json");
         return HTTPClientPtr{ httpClient.release() }; // gcc 4.8 fails to cast std::unique_ptr
     }
-} // namespace raven
+} // namespace cppcapture

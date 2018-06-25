@@ -1,19 +1,25 @@
-# ravencpp
+# cppcapture
+[![pipeline status](https://gitlab.com/aurelienrb/cppcapture/badges/master/pipeline.svg)](https://gitlab.com/aurelienrb/cppcapture/commits/master)
 
-Unofficial C++11 client library for [Sentry](https://sentry.io).
+C++11 library to capture and send events to various monitoring platforms.
+
+Supported platforms:
+- https://sentry.io
 
 ## Example
 
 ```cpp
+ConfigureSentry(DefaultContext(), sentryID, sentryToken);
+
 try {
-	RavenCaptureWarning("simple warning message")
+	CaptureWarning("simple warning message")
 		.WithTag("tag1", "value1");
-	RavenCaptureError("simple error message")
+	CaptureError("simple error message")
 		.WithExtra({ "extra1", "value" });
 
 	throw std::logic_error{ "exception message" };
 } catch (const std::exception & e) {
-	RavenCaptureException(e).WithMessage("Exception was caught");
+	CaptureException(e);
 }
 ```
 
@@ -26,13 +32,14 @@ try {
   - Ubuntu >= 14.04
   - CMake >= 2.8
 
-## Limitations
+## Limitation
 
 - No HTTPS support
 
 ## Alternatives
 
-https://github.com/truszkowski/raven-cpp
+- https://github.com/truszkowski/raven-cpp
+- https://github.com/shikharkhattar/sentry-cpp
 
 ## License
 

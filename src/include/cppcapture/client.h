@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "raven/channel.h"
-#include "raven/event.h"
+#include "cppcapture/channel.h"
+#include "cppcapture/event.h"
 
-namespace raven {
+namespace cppcapture {
     // Client is used to send events to Sentry service
     class Client {
     public:
@@ -21,7 +21,9 @@ namespace raven {
             return *this;
         }
 
-        void SetChannel(ChannelPtr channel) { m_channel = std::move(channel); }
+        void SetChannel(ChannelPtr channel) {
+            m_channel = std::move(channel);
+        }
 
     private:
         ChannelPtr m_channel;
@@ -30,4 +32,4 @@ namespace raven {
         std::string m_release;     // 1.3.2
         std::string m_environment; // production
     };
-} // namespace raven
+} // namespace cppcapture

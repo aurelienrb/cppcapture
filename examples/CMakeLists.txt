@@ -1,4 +1,4 @@
-add_executable(ravencpp_example
+add_executable(cppcapture_example
 	main.cpp
 )
-target_link_libraries(ravencpp_example ravencpp)
+target_link_libraries(cppcapture_example cppcapture)

@@ -6,6 +6,6 @@
 
 #define LogSocketError(...) LogError(__VA_ARGS__, ", err=", WSAGetLastError())
 
-namespace raven {
+namespace cppcapture {
     void InitWinsock();
 }

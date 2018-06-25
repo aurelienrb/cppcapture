@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace raven {
+namespace cppcapture {
     using HTTPClientPtr = std::unique_ptr<class HTTPClient>;
 
     class HTTPClient {
@@ -21,4 +21,4 @@ namespace raven {
         // or to defer it to the first call to sendRequest().
         virtual bool sendRequest(const std::string & body) = 0;
     };
-} // namespace raven
+} // namespace cppcapture

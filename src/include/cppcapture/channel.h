@@ -1,11 +1,11 @@
 #pragma once
 
-#include "raven/event.h"
+#include "cppcapture/event.h"
 
 #include <memory>
 #include <string>
 
-namespace raven {
+namespace cppcapture {
     // FlushAllChannels calls Flush() on all the existing channel instances.
     // The typical use case is on program termination to make sure all channels complete their tasks before exiting.
     void FlushAllChannels();
@@ -41,4 +41,4 @@ namespace raven {
         // Channel constructor keeps tracks of of the created instances
         Channel();
     };
-} // namespace raven
+} // namespace cppcapture

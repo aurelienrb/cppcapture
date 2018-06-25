@@ -2,7 +2,7 @@
 
 #include "httpclient.h"
 
-namespace raven {
+namespace cppcapture {
     class NativeSocketHTTPClient : public HTTPClient {
     public:
         NativeSocketHTTPClient(std::string hostname, int port, std::string path);
@@ -17,4 +17,4 @@ namespace raven {
         int m_port;
         std::string m_httpHeader;
     };
-} // namespace raven
+} // namespace cppcapture

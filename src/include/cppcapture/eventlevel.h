@@ -1,6 +1,6 @@
 #pragma once
 
-namespace raven {
+namespace cppcapture {
     enum class EventLevel {
         Fatal,
         Error,
@@ -25,4 +25,4 @@ namespace raven {
             return "";
         }
     }
-} // namespace raven
+} // namespace cppcapture
