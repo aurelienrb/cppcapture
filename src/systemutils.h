@@ -14,7 +14,7 @@ namespace cppcapture {
 
     std::string normalizePath(const char * path);
 
-    std::string makeTimestamp();
+    std::string makeTimestampISO8601();
 
     std::string makeExceptionType(const std::exception & e);
 } // namespace cppcapture

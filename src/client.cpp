@@ -3,29 +3,30 @@
 
 namespace cppcapture {
     Client::Client() {
-        LogInfo("creating new client");
+        CPPCAPTURE_LOGINFO("creating new client");
     }
+
     Client::~Client() {
-        LogInfo("destroying client");
+        CPPCAPTURE_LOGINFO("destroying client");
         if (m_channel) {
-            LogInfo("flushing channel attached to Client");
+            CPPCAPTURE_LOGDEBUG("flushing channel");
             m_channel->Flush();
         }
     }
 
     void Client::Send(const Event & event) {
         assert(m_channel);
-        LogInfo("sending new event from Client");
         if (!m_channel) {
-            LogError("can't send the event: channel configuration was not done");
+            CPPCAPTURE_LOGERROR("can't send the event: channel configuration was not done");
             return;
         }
 
         // make sure we don't leak an exception
         try {
+            CPPCAPTURE_LOGINFO("sending event on channel");
             m_channel->SendEvent(event);
         } catch (const std::exception & e) {
-            LogError("caught an exception while sending event: ", e.what());
+            CPPCAPTURE_LOGERROR("caught an exception while sending event: ", e.what());
         }
     }
 } // namespace cppcapture

@@ -9,7 +9,7 @@
 namespace cppcapture {
     using ChannelEncoderFn = std::function<std::string(const cppcapture::Event &)>;
 
-    class SenderThread : public cppcapture::Channel {
+    class SenderThread : public Channel {
     public:
         static std::shared_ptr<SenderThread> StartNew(HTTPClientPtr httpClient, ChannelEncoderFn encoder) {
             return std::shared_ptr<SenderThread>{ new SenderThread{ std::move(httpClient), std::move(encoder) } };

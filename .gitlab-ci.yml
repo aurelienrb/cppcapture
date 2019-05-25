@@ -1,45 +1,47 @@
 variables:
   CXX: g++
-  CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Debug -DCPPCAPTURE_LOG_TRACES=ON -DCPPCAPTURE_BUILD_TESTS=ON"
+  APT_PACKAGES: build-essential cmake
+  CMAKE_FLAGS: -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
 
 # template to build the src
 .build_tpl: &build_tpl
   stage: build
+  before_script:
+  - apt-get update -qq && apt-get install -qq $APT_PACKAGES
   script:
   - $CXX -dumpversion
   - cmake -version
-  - alias make="make -j `nproc --all`"
-  - echo "Building on `nproc --all` cores with CMAKE_ARGS=$CMAKE_ARGS, CC=$CC, CXX=$CXX"
   - mkdir build && pushd build
-  - cmake $CMAKE_ARGS ..
-  - time make
+  - cmake $CMAKE_FLAGS ..
+  - make -j `nproc --all`
   - CTEST_OUTPUT_ON_FAILURE=1 make test
-
-# gcc 4.8, cmake 2.8
-ubuntu-14.04:
-  image: ubuntu:14.04
-  before_script:
-  - apt-get update -qq && apt-get install -qq build-essential cmake
-  <<: *build_tpl
 
 # gcc 5.4, cmake 3.5
 ubuntu-16.04:
   image: ubuntu:16.04
-  before_script:
-  - apt-get update -qq && apt-get install -qq build-essential cmake
   <<: *build_tpl
 
 # gcc 7.3, cmake 3.10
 ubuntu-18.04:
   image: ubuntu:18.04
-  before_script:
-  - apt-get update -qq && apt-get install -qq build-essential cmake
   <<: *build_tpl
 
-clang-5.0:
+gcc-9:
+  image: gcc:9
+  <<: *build_tpl
+
+clang-5:
   image: ubuntu:16.04
   variables:
     CXX: clang++-5.0
-  before_script:
-  - apt-get update -qq && apt-get install -qq cmake clang-5.0
+    APT_PACKAGES: cmake clang-5.0
+    CMAKE_FLAGS: -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+  <<: *build_tpl
+
+with-qt5:
+  image: ubuntu:18.04
+  variables:
+    CXX: g++
+    APT_PACKAGES: build-essential cmake qtbase5-dev
+    CMAKE_FLAGS: -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON -DCPPCAPTURE_WITH_QT=ON
   <<: *build_tpl

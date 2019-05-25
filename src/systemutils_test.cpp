@@ -1,8 +1,8 @@
 #include "systemutils.h"
 #include <exception>
 
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest/doctest.h>
 
 class ExceptionClass : public std::runtime_error {
 public:
