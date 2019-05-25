@@ -1,5 +1,5 @@
-#include "socket_windows.h"
 #include "debugging.h"
+#include "socket_windows.h"
 
 namespace cppcapture {
     void InitWinsock() {

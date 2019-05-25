@@ -14,7 +14,13 @@ namespace cppcapture {
 
     std::string normalizePath(const char * path);
 
+    inline std::string normalizePath(const std::string & path) {
+        return normalizePath(path.c_str());
+    }
+
     std::string makeTimestamp();
 
     std::string makeExceptionType(const std::exception & e);
+
+    std::string demangle(const char * name);
 } // namespace cppcapture

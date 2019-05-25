@@ -64,6 +64,7 @@ if (CPPCAPTURE_BUILD_TESTS)
 	add_executable(cppcapture_test 
 		stacktrace_test.cpp
 		systemutils_test.cpp
+		encoder/json_encoder_test.cpp
 	)
 	target_link_libraries(cppcapture_test cppcapture catch)
 endif()
