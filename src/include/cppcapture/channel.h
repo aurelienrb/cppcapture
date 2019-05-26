@@ -39,6 +39,9 @@ namespace cppcapture {
 
     protected:
         // Channel constructor keeps tracks of of the created instances
-        Channel();
+        explicit Channel(std::string name);
+
+    private:
+        std::string m_name;
     };
 } // namespace cppcapture

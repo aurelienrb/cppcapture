@@ -23,7 +23,7 @@ static std::string demangle(const std::type_info & type) {
     } else if (strncmp(name, "struct ", 7) == 0) {
         return name + 7;
     }
-    LogError(std::string{ "failed to demangle VC++ type name: " } + name);
+    CPPCAPTURE_LOGERROR("failed to demangle VC++ type name: ", name);
     return name;
 }
 #else
@@ -31,7 +31,7 @@ static std::string demangle(const std::type_info & type) {
 
 static std::string demangle(const std::type_info & type) {
     int status;
-    char * demangled         = abi::__cxa_demangle(type.name(), NULL, NULL, &status);
+    char * demangled         = abi::__cxa_demangle(type.name(), nullptr, nullptr, &status);
     const std::string result = (status == 0) ? demangled : type.name();
     free(demangled);
     return result;
@@ -47,7 +47,7 @@ namespace cppcapture {
         return result;
     }
 
-    std::string makeTimestamp() {
+    std::string makeTimestampISO8601() {
         time_t now;
         time(&now);
 
@@ -55,7 +55,7 @@ namespace cppcapture {
         gmtime_r(&now, &utcTime);
 
         char buffer[32];
-        strftime(buffer, sizeof buffer, "%FT%TZ", &utcTime);
+        strftime(buffer, sizeof buffer, "%Y-%m-%dT%H:%M:%SZ%z", &utcTime);
         return buffer;
     }
 

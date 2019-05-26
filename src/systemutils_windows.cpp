@@ -1,7 +1,6 @@
 #include "systemutils.h"
 
 #include <windows.h>
-#pragma comment(lib, "rpcrt4.lib")
 
 namespace cppcapture {
     std::string newUUID() {

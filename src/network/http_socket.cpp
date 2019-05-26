@@ -32,7 +32,7 @@ namespace cppcapture {
         request += "\r\n";
         request += body;
 
-        std::string response;
-        return SendRawRequest(m_hostname, m_port, request, response);
+        Socket socket{ m_hostname, m_port };
+        return socket.send(request);
     }
 } // namespace cppcapture

@@ -67,7 +67,7 @@ namespace cppcapture {
         */
 
         // The timestamp should be in ISO 8601 format, without a timezone (UTC)
-        json.append("timestamp", makeTimestamp());
+        json.append("timestamp", makeTimestampISO8601());
 
         // The name of the logger which created the record
         // If none is provided, the source file path is a good replacement

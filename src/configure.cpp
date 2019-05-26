@@ -2,35 +2,23 @@
 #include "encoder/sentry.h"
 #include "sender_thread.h"
 
+#include <iomanip>
 #include <iostream>
 #include <mutex>
 
 static void DefaultLogHandler(const std::string & level, const std::string & msg) {
     std::ostream * stream = nullptr;
-    if (level == "error") {
+    if (level == "error" || level == "ERROR") {
         stream = &std::cerr;
     } else {
-#ifdef _DEBUG
         stream = &std::cout;
-#endif
     }
 
     if (stream) {
-#ifdef _DEBUG
-        // serialize messages in debug but don't interfer with client threads scheling in release
         static std::mutex s_mutex;
         std::lock_guard<std::mutex> lock{ s_mutex };
-#endif
 
-        *stream << "(cppcapture) [";
-        for (size_t i = level.length(); i < 5; i++) {
-            *stream << ' ';
-        }
-        *stream << level << "] ";
-        if (level == "debug") {
-            *stream << "  ";
-        }
-        *stream << msg << "\n";
+        *stream << "[" << std::setw(5) << level << "] (cppcapture) " << msg << std::endl;
     }
 }
 

@@ -46,13 +46,13 @@ public:
         std::unique_lock<std::mutex> lock{ m_mutex };
 
         if (m_isClosed) {
-            LogError("discarding message because queue is closed");
+            CPPCAPTURE_LOGERROR("discarding message because queue is closed");
             return false;
         }
 
         // check queue isn't full
         if (m_queue.size() == m_maxQueueSize) {
-            LogError("discarding message because queue is full");
+            CPPCAPTURE_LOGERROR("discarding message because queue is full");
             return false;
         }
 
@@ -84,8 +84,9 @@ namespace cppcapture {
         std::atomic<bool> isRunning{ false };
     };
 
-    SenderThread::SenderThread(HTTPClientPtr httpClient, ChannelEncoderFn encoder) : m_pimpl(new Pimpl) {
-        LogInfo("creating new sender thread");
+    SenderThread::SenderThread(HTTPClientPtr httpClient, ChannelEncoderFn encoder)
+        : Channel("SenderThread"), m_pimpl(new Pimpl) {
+        CPPCAPTURE_LOGDEBUG("creating new sender thread");
         m_pimpl->httpClient = std::move(httpClient);
         m_pimpl->encoder    = std::move(encoder);
         // start the thread
@@ -94,7 +95,7 @@ namespace cppcapture {
     }
 
     SenderThread::~SenderThread() {
-        LogInfo("destroying sender thread");
+        CPPCAPTURE_LOGDEBUG("destroying sender thread");
         assert(m_pimpl->isRunning);
         if (m_pimpl->isRunning) {
             // it's the responsibility of the owner of the thread to flush the thread before destroying it
@@ -105,10 +106,10 @@ namespace cppcapture {
     }
 
     void SenderThread::stop() {
-        LogInfo("stopping sender thread");
+        CPPCAPTURE_LOGDEBUG("stopping sender thread");
         assert(m_pimpl->isRunning);
         if (m_pimpl->queue.size() > 0) {
-            LogError("stopping sender thread with a non empty queue: pending messages will be discarded");
+            CPPCAPTURE_LOGERROR("stopping sender thread with a non empty queue: pending messages will be discarded");
         }
 
         // ask the thread to exit and refuse new request to send data
@@ -128,14 +129,14 @@ namespace cppcapture {
     void SenderThread::run() {
         assert(m_pimpl->isRunning);
 
-        LogInfo("entering sender thread main loop");
+        CPPCAPTURE_LOGDEBUG("entering sender thread main loop");
         while (m_pimpl->isRunning) {
             // wait for data to send
             const std::string str = m_pimpl->queue.readWithTimeout();
             if (str.empty()) {
                 continue;
             }
-            LogDebug("got a new message to send from sender thread");
+            CPPCAPTURE_LOGDEBUG("got a new message to send from sender thread");
 
             // send only one data and return to sleep to avoid to block for too long the callers
             // if too many data is being pushed to the queue, they will be discarded by the callers
@@ -144,40 +145,40 @@ namespace cppcapture {
 
             // does not return until the message was sent, unless the operation was cancelled by the caller
             while (!m_pimpl->httpClient->sendRequest(str)) {
-                LogDebug("sending message failed");
-
                 if (!m_pimpl->isRunning) {
                     // we where asked to quit
-                    LogInfo("not sending message: cancellation requested");
+                    CPPCAPTURE_LOGINFO("message was not sent (cancellation requested)");
                     break;
                 }
-                // TODO: use condition variable to unblock thread if stuck in sleep
-                LogError("message was not sent, pausing before retry");
+                CPPCAPTURE_LOGERROR("message was not sent, pausing before retry");
+
+                // TODO: use condition variable to wake up thread when asked to stop
                 std::this_thread::sleep_for(sleepTime);
 
                 // augment sleeping delay for next attempt until we reach 1 min
-                if (sleepTime < std::chrono::minutes{ 1 }) {
+                if (sleepTime < std::chrono::seconds{ 30 }) {
                     sleepTime *= 2;
                 }
             }
         }
-        LogInfo("exiting sender thread main loop");
+        CPPCAPTURE_LOGINFO("exiting sender thread main loop");
     }
 
     void SenderThread::SendEvent(const cppcapture::Event & e) {
-        LogDebug("pushing a new event to the sender thread queue");
+        CPPCAPTURE_LOGDEBUG("pushing a new event to the sender thread queue");
         if (!m_pimpl->isRunning) {
-            LogError("ignoring request to send message: sender thread is not running");
+            CPPCAPTURE_LOGERROR("ignoring request to send message: sender thread is not running");
             return;
         }
 
         if (!m_pimpl->queue.push(m_pimpl->encoder(e))) {
-            LogError("an event has been rejected by the sender thread: the queue might be full or the thread stopped");
+            CPPCAPTURE_LOGERROR(
+                "an event has been rejected by the sender thread: the queue might be full or the thread stopped");
         }
     }
 
     void SenderThread::Flush() {
-        LogInfo("flushing sender thread");
+        CPPCAPTURE_LOGDEBUG("flushing sender thread");
         if (!m_pimpl->isRunning) {
             return;
         }
@@ -186,19 +187,20 @@ namespace cppcapture {
         for (size_t i = 0; i < 5 && m_pimpl->isRunning; i++) {
             size_t size = m_pimpl->queue.size();
             if (size == 0) {
-                LogDebug("flushing sender thread: done");
+                CPPCAPTURE_LOGDEBUG("flushing sender thread: done");
                 return; // done!
             }
-            LogDebug("sending thread queue is not empty: flushing...");
+            CPPCAPTURE_LOGDEBUG("sending thread queue is not empty: flushing...");
 
             // processing a single message in the queue should not take longer than 1 sec
             // if it does we stop immediately because the connection is probably down,
             // or we may enqueue events faster that we can send them
             std::this_thread::sleep_for(s_readTimeout + std::chrono::seconds{ 1 });
             if (m_pimpl->queue.size() >= size) {
+                CPPCAPTURE_LOGERROR("cancelling flush operation: message sending seems to be blocked");
                 break;
             }
         }
-        LogError("could not complete flush operation: message queue is not being processed fast enough");
+        CPPCAPTURE_LOGERROR("could not complete flush operation: message queue is not being processed fast enough");
     }
 } // namespace cppcapture
