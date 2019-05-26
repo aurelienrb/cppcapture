@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-
+#include "cppcapture/anystring.h"
 #include "cppcapture/eventlevel.h"
+
+#include <unordered_map>
 
 namespace cppcapture {
     class Event {
@@ -28,43 +28,43 @@ namespace cppcapture {
         // Set the LoggerName info.
         // May be not very useful in a C++ context since we have source file location macros, but can make sense
         // if combined with a logging library such as LOG4CXX that has such a concept.
-        Event & WithLoggerName(std::string loggerName) {
-            m_loggerName = std::move(loggerName);
+        Event & WithLoggerName(AnyString loggerName) {
+            m_loggerName = std::move(loggerName.str);
             return *this;
         }
 
-        Event & WithMessage(std::string msg) {
-            m_message = std::move(msg);
+        Event & WithMessage(AnyString msg) {
+            m_message = std::move(msg.str);
             return *this;
         }
 
-        Event & WithTag(const std::string & key, const std::string & value) {
-            m_tags[key] = value;
+        Event & WithTag(const AnyString & key, const AnyString & value) {
+            m_tags[key.str] = value.str;
             return *this;
         }
 
-        Event & WithTag(const std::pair<std::string, std::string> & p) {
+        Event & WithTag(const std::pair<AnyString, AnyString> & p) {
             return WithTag(p.first, p.second);
         }
 
-        Event & WithExtra(const std::string & key, const std::string & value) {
-            m_extra[key] = value;
+        Event & WithExtra(const AnyString & key, const AnyString & value) {
+            m_extra[key.str] = value.str;
             return *this;
         }
 
-        Event & WithExtra(const std::pair<std::string, std::string> & p) {
+        Event & WithExtra(const std::pair<AnyString, AnyString> & p) {
             return WithExtra(p.first, p.second);
         }
 
         Event & WithException(const std::exception & e);
 
-        Event & WithException(std::string type, std::string value) {
-            m_exceptionType  = std::move(type);
-            m_exceptionValue = std::move(value);
+        Event & WithException(AnyString type, AnyString value) {
+            m_exceptionType  = std::move(type.str);
+            m_exceptionValue = std::move(value.str);
             return *this;
         }
 
-        // Event & WithStacktrace(const std::string & msg);
+        // Event & WithStacktrace(const AnyString & msg);
 
         std::string ToJSON() const;
 

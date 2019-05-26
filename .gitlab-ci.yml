@@ -14,7 +14,7 @@ variables:
   - mkdir build && pushd build
   - cmake $CMAKE_FLAGS ..
   - make -j `nproc --all`
-  - CTEST_OUTPUT_ON_FAILURE=1 make test
+  - CTEST_OUTPUT_ON_FAILURE=1 ctest -V
 
 # gcc 5.4, cmake 3.5
 ubuntu-16.04:

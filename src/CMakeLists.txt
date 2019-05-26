@@ -1,6 +1,7 @@
 set(cppcapture_INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(cppcapture_SRC
+    ${cppcapture_INC_DIR}/cppcapture/anystring.h
     ${cppcapture_INC_DIR}/cppcapture/channel.h
     ${cppcapture_INC_DIR}/cppcapture/client.h
     ${cppcapture_INC_DIR}/cppcapture/configure.h
@@ -52,7 +53,7 @@ if (CPPCAPTURE_WITH_QT)
 endif()
 
 if (BUILD_TESTING)
-    add_executable(cppcapture_test systemutils_test.cpp)
+    add_executable(cppcapture_test anystring_test.cpp systemutils_test.cpp)
     target_link_libraries(cppcapture_test cppcapture doctest)
     add_test(NAME cppcapture_test COMMAND cppcapture_test)
 endif()
