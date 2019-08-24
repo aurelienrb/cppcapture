@@ -16,7 +16,7 @@ namespace cppcapture {
 
         void Send(const Event & event);
 
-        Client & operator<<(const Event & event) {
+        Client & operator+=(const Event & event) {
             Send(event);
             return *this;
         }

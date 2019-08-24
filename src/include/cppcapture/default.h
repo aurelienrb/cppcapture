@@ -4,19 +4,19 @@
 #include "cppcapture/event.h"
 
 #define CaptureWarning(msg)                                                                                            \
-    cppcapture::DefaultContext() << cppcapture::Event{ cppcapture::EventLevel::Warning }                               \
+    cppcapture::DefaultContext() += cppcapture::Event{ cppcapture::EventLevel::Warning }                               \
                                         .WithFunctionLocation(__func__)                                                \
                                         .WithFileLocation(__FILE__, __LINE__)                                          \
                                         .WithMessage(msg)
 
 #define CaptureError(msg)                                                                                              \
-    cppcapture::DefaultContext() << cppcapture::Event{ cppcapture::EventLevel::Error }                                 \
+    cppcapture::DefaultContext() += cppcapture::Event{ cppcapture::EventLevel::Error }                                 \
                                         .WithFunctionLocation(__func__)                                                \
                                         .WithFileLocation(__FILE__, __LINE__)                                          \
                                         .WithMessage(msg)
 
 #define CaptureException(e)                                                                                            \
-    cppcapture::DefaultContext() << cppcapture::Event{ cppcapture::EventLevel::Error }                                 \
+    cppcapture::DefaultContext() += cppcapture::Event{ cppcapture::EventLevel::Error }                                 \
                                         .WithFunctionLocation(__func__)                                                \
                                         .WithFileLocation(__FILE__, __LINE__)                                          \
                                         .WithMessage(e.what())                                                         \
