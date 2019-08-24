@@ -55,7 +55,7 @@ namespace cppcapture {
         gmtime_r(&now, &utcTime);
 
         char buffer[32];
-        strftime(buffer, sizeof buffer, "%Y-%m-%dT%H:%M:%SZ%z", &utcTime);
+        strftime(buffer, sizeof buffer, "%Y-%m-%dT%H:%M:%SZ", &utcTime);
         return buffer;
     }
 
