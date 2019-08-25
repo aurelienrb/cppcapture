@@ -17,21 +17,8 @@ static std::string makeCulprit(const char * functionName, const char * sourceFil
     }
 
     if (sourceFile != nullptr) {
-        std::string path = cppcapture::normalizePath(sourceFile);
-
-        // if we already have the function name, just keep the file name and not its full path
-        if (!result.empty()) {
-            auto pos = path.find_last_of('/');
-            if (pos != std::string::npos) {
-                path = path.substr(pos + 1);
-            }
-        }
-
-        if (result.empty()) {
-            result = std::move(path);
-        } else {
-            result += " (" + path + ")";
-        }
+        const std::string path = cppcapture::normalizeSourceFileName(sourceFile);
+        result += " (" + path + ")";
     }
 
     return result;
@@ -76,7 +63,7 @@ namespace cppcapture {
         if (!m_loggerName.empty()) {
             json.append("logger", m_loggerName);
         } else if (m_sourceFile) {
-            json.append("logger", normalizePath(m_sourceFile));
+            json.append("logger", normalizeSourceFileName(m_sourceFile));
         }
 
         if (m_sourceFile != nullptr) {
@@ -89,7 +76,7 @@ namespace cppcapture {
         // source file location
         auto extra = m_extra;
         if (m_sourceFile != nullptr) {
-            auto location = normalizePath(m_sourceFile);
+            std::string location = normalizeSourceFileName(m_sourceFile);
             if (m_lineNumber > 0) {
                 location += ":" + std::to_string(m_lineNumber);
             }

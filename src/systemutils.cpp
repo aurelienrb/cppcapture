@@ -39,11 +39,24 @@ static std::string demangle(const std::type_info & type) {
 #endif
 
 namespace cppcapture {
-    std::string normalizePath(const char * path) {
+    std::string normalizeSourceFileName(const char * path) {
+        // make sure to have normal slashes '/'
         std::string result = (path != nullptr) ? path : "";
-#ifdef _WIN32
         std::replace(result.begin(), result.end(), '\\', '/');
-#endif
+        assert(result.find("/../") == std::string::npos); // given path should be absolute
+
+        // the full file path is too long to be displayed in Sentry: keep only its name + parent dir
+        auto pos = result.find_last_of('/');
+        if (pos != std::string::npos) {
+            // we found the file name: limit the path to its parent dir if present
+            if (pos > 0) {
+                pos = result.find_last_of('/', pos - 1);
+                if (pos != std::string::npos) {
+                    result = result.substr(pos + 1);
+                }
+            }
+        }
+
         return result;
     }
 

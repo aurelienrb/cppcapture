@@ -16,7 +16,24 @@ public:
     }
 };
 
+using namespace cppcapture;
+
 TEST_CASE("Test makeExceptionType") {
-    CHECK(cppcapture::makeExceptionType(ExceptionClass{}) == "ExceptionClass");
-    CHECK(cppcapture::makeExceptionType(ExceptionStruct{}) == "ExceptionStruct");
+    CHECK(makeExceptionType(ExceptionClass{}) == "ExceptionClass");
+    CHECK(makeExceptionType(ExceptionStruct{}) == "ExceptionStruct");
+}
+
+TEST_CASE("Test normalizeSourceFileName") {
+    CHECK(normalizeSourceFileName(nullptr) == "");
+    CHECK(normalizeSourceFileName("") == "");
+    CHECK(normalizeSourceFileName("/") == "/");
+    CHECK(normalizeSourceFileName("file.cpp") == "file.cpp");
+    CHECK(normalizeSourceFileName("parent/file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("parent\\file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("/parent/file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("\\parent\\file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("root/parent/file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("C:\\parent\\file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("root/path/parent/file.cpp") == "parent/file.cpp");
+    CHECK(normalizeSourceFileName("C:\\path\\parent\\file.cpp") == "parent/file.cpp");
 }
