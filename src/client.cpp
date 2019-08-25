@@ -2,6 +2,12 @@
 #include "cppcapture/client.h"
 
 namespace cppcapture {
+
+    Client & Client::Instance() {
+        static Client s_instance;
+        return s_instance;
+    }
+
     Client::Client() {
         CPPCAPTURE_LOGINFO("creating new client");
     }
@@ -14,7 +20,7 @@ namespace cppcapture {
         }
     }
 
-    void Client::Send(const Event & event) {
+    void Client::operator+=(const Event & event) {
         assert(m_channel);
         if (!m_channel) {
             CPPCAPTURE_LOGERROR("can't send the event: channel configuration was not done");

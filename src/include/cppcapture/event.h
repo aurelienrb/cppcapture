@@ -8,18 +8,13 @@
 namespace cppcapture {
     class Event {
     public:
-        explicit Event(EventLevel level) : m_level(level) {
+        Event(EventLevel level, const char * functionName) : m_level(level), m_functionName(functionName) {
         }
         Event(Event &&)      = default;
         Event(const Event &) = delete;
 
-        Event & WithFunctionLocation(const char * functionName) {
-            m_functionName = functionName;
-            return *this;
-        }
-
         // On Windows, path can include anti-slashes
-        Event & WithFileLocation(const char * sourceFile, int lineNumber = 0) {
+        Event & WithLocation(const char * sourceFile, int lineNumber) {
             m_sourceFile = sourceFile;
             m_lineNumber = lineNumber;
             return *this;
@@ -52,10 +47,6 @@ namespace cppcapture {
             return *this;
         }
 
-        Event & WithExtra(const std::pair<AnyString, AnyString> & p) {
-            return WithExtra(p.first, p.second);
-        }
-
         Event & WithException(const std::exception & e);
 
         Event & WithException(AnyString type, AnyString value) {
@@ -63,8 +54,6 @@ namespace cppcapture {
             m_exceptionValue = std::move(value.str);
             return *this;
         }
-
-        // Event & WithStacktrace(const AnyString & msg);
 
         std::string ToJSON() const;
 

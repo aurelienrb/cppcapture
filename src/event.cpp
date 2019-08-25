@@ -1,5 +1,7 @@
 #include "cppcapture/event.h"
+#include "cppcapture/breadcrumbs.h"
 #include "cppcapture/configure.h"
+
 #include "debugging.h"
 #include "encoder/json_encoder.h"
 #include "systemutils.h"
@@ -112,6 +114,8 @@ namespace cppcapture {
                 //.append("params", R"(["Param1"])")
                 .endBlock();
         }
+
+        Breadcrumbs::Instance().ToJSON(json);
 
         return json.complete();
     }

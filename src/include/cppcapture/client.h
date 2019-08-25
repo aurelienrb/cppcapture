@@ -7,23 +7,19 @@ namespace cppcapture {
     // Client is used to send events to Sentry service
     class Client {
     public:
-        Client();
-        ~Client();
+        static Client & Instance();
 
-        // prevent copy
-        Client(const Client &) = delete;
-        void operator=(const Client &) = delete;
-
-        void Send(const Event & event);
-
-        Client & operator+=(const Event & event) {
-            Send(event);
-            return *this;
-        }
+    public:
+        // operator used to send a new event (via the macros)
+        void operator+=(const Event & event);
 
         void SetChannel(ChannelPtr channel) {
             m_channel = std::move(channel);
         }
+
+    private:
+        Client();
+        ~Client();
 
     private:
         ChannelPtr m_channel;
@@ -33,3 +29,18 @@ namespace cppcapture {
         std::string m_environment; // production
     };
 } // namespace cppcapture
+
+#define CaptureWarning(msg)                                                                                            \
+    cppcapture::Client::Instance() += cppcapture::Event{                                                               \
+        cppcapture::EventLevel::Warning, __func__                                                                      \
+    }.WithLocation(__FILE__, __LINE__).WithMessage(msg)
+
+#define CaptureError(msg)                                                                                              \
+    cppcapture::Client::Instance() +=                                                                                  \
+        cppcapture::Event{ cppcapture::EventLevel::Error, __func__ }.WithLocation(__FILE__, __LINE__).WithMessage(msg)
+
+#define CaptureException(e)                                                                                            \
+    cppcapture::Client::Instance() += cppcapture::Event{ cppcapture::EventLevel::Error, __func__ }                     \
+                                          .WithLocation(__FILE__, __LINE__)                                            \
+                                          .WithMessage(e.what())                                                       \
+                                          .WithException(e)
